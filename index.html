@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Calculadora Penal - Brasil Roleplay. Sistema completo para cálculo de penas, multas e fianças." />
+  <meta name="keywords" content="Brasil Roleplay, BRP, Calculadora Penal, GTA RP, Roleplay" />
+  <meta name="author" content="Creito Mezenga" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <title>CALCULADORA PENAL - BRP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Poppins:wght@400;600;700;900&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      /* Light Theme (Fallbacks, though we focus on Dark) */
+      --brp-bg: #e0e7ff;
+      --brp-panel: rgba(255, 255, 255, 0.7);
+      --brp-accent: #4f46e5;
+      --brp-card: rgba(255, 255, 255, 0.5);
+      --brp-muted: rgba(255, 255, 255, 0.3);
+      --brp-text: #1e1b4b;
+      --brp-border: rgba(79, 70, 229, 0.2);
+      --brp-glow: 0 0 15px rgba(79, 70, 229, 0.3);
+    }
+
+    [data-theme="dark"] {
+      --brp-bg: #0f0c29;
+      /* Deep Purple/Black */
+      --brp-panel: rgba(20, 20, 40, 0.6);
+      /* Glassy Dark */
+      --brp-accent: #00f2ff;
+      /* Neon Cyan/Blue */
+      --brp-accent-secondary: #bc13fe;
+      /* Neon Purple */
+      --brp-card: rgba(30, 30, 60, 0.4);
+      --brp-muted: rgba(255, 255, 255, 0.05);
+      --brp-text: #ffffff;
+      --brp-border: rgba(0, 242, 255, 0.2);
+      --brp-glow: 0 0 20px rgba(0, 242, 255, 0.15);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      /* Cyberpunk/Synthwave Gradient */
+      background: radial-gradient(circle at 50% 0%, #302b63 0%, #0f0c29 100%);
+      font-family: 'Poppins', sans-serif;
+      color: var(--brp-text);
+      min-height: 100vh;
+      transition: background 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    /* Glassmorphism Utilities */
+    .glass-panel {
+      background: var(--brp-panel);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--brp-border);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .glass-card {
+      background: var(--brp-card);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Animations */
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes glowPulse {
+      0% {
+        box-shadow: 0 0 5px var(--brp-accent);
+      }
+
+      50% {
+        box-shadow: 0 0 20px var(--brp-accent), 0 0 10px var(--brp-accent-secondary);
+      }
+
+      100% {
+        box-shadow: 0 0 5px var(--brp-accent);
+      }
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    @keyframes logoBounce {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      25% {
+        transform: translateY(-8px) rotate(-3deg);
+      }
+
+      50% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      75% {
+        transform: translateY(-4px) rotate(3deg);
+      }
+    }
+
+    .animate-enter {
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .hover-glow:hover {
+      animation: glowPulse 2s infinite;
+    }
+
+    .title-gradient-animate {
+      background: linear-gradient(90deg,
+          #00f2ff,
+          #bc13fe,
+          #ff006e,
+          #ffbe0b,
+          #00f2ff,
+          #bc13fe);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 4s ease infinite;
+    }
+
+    .logo-bounce {
+      animation: logoBounce 3s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--brp-accent);
+      border-radius: 4px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+
+    .brp-paste-preview {
+      background: var(--brp-muted);
+      border: 2px dashed var(--brp-border);
+      transition: all 0.3s ease;
+    }
+
+    .brp-paste-preview:hover {
+      border-color: var(--brp-accent);
+      background: rgba(0, 242, 255, 0.1);
+    }
+
+    .text-neon {
+      text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+    }
+
+    .brp-footer-wave svg {
+      fill: var(--brp-panel);
+    }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "date-fns": "https://esm.sh/date-fns@^4.1.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+  }
+}
+</script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>
