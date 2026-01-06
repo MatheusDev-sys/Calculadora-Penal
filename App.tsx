@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { articlesData, attenuantsData } from './data';
 import { Article, Attenuant } from './types';
-import { Search, X, Moon, Sun, Gavel, Trash2, Check, Copy, AlertCircle, Camera } from 'lucide-react';
+import { Search, X, Moon, Sun, Gavel, Trash2, Check, Copy, AlertCircle, Camera, Download } from 'lucide-react';
+import JSZip from 'jszip';
 
 // --- Toast Component ---
 interface ToastProps {
@@ -340,17 +341,46 @@ export default function App() {
 
     message += `**RELATÓRIO DA AÇÃO:**\n${regForm.report}\n`;
 
-    // Copy to clipboard
+    // Create ZIP file
     try {
-      await navigator.clipboard.writeText(message);
+      const zip = new JSZip();
+
+      // Add report text file
+      zip.file('relatorio.txt', message);
+
+      // Add all uploaded images
+      const uploadedFiles = Object.entries(files).filter(([_, file]) => file !== null);
+
+      if (uploadedFiles.length > 0) {
+        const imagesFolder = zip.folder('imagens');
+        uploadedFiles.forEach(([key, file]) => {
+          if (file && imagesFolder) {
+            const typedFile = file as File;
+            const extension = typedFile.name.split('.').pop() || 'png';
+            imagesFolder.file(`${key}.${extension}`, typedFile);
+          }
+        });
+      }
+
+      // Generate ZIP and download
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `registro_prisao_${accusedName.replace(/\s+/g, '_')}_${Date.now()}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
       setToast({
-        message: 'Relatório Copiado!',
-        subMessage: 'Cole o texto no Discord (Ctrl+V) e arraste as imagens manualmente.',
+        message: 'ZIP Baixado!',
+        subMessage: `Arquivo contém o relatório e ${uploadedFiles.length} imagem(ns). Extraia e envie no Discord.`,
         type: 'success'
       });
       setActiveModal(null);
     } catch (err) {
-      setToast({ message: 'Erro ao copiar', subMessage: 'Verifique as permissões do navegador', type: 'error' });
+      setToast({ message: 'Erro ao criar ZIP', subMessage: 'Tente novamente', type: 'error' });
       console.error(err);
     }
   };
